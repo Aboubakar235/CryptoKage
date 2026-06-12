@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CryptoApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --accent: #7c3aed;
+            --bg-dark: #0a0e1a;
+            --bg-card: #0f1629;
+            --bg-input: #1a2240;
+            --border: rgba(0, 212, 255, 0.15);
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+        }
+        .sidebar {
+            width: 280px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background: rgba(12, 17, 32, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            z-index: 100;
+        }
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sidebar-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-user {
+            padding: 20px;
+            background: rgba(0, 212, 255, 0.05);
+            margin: 16px;
+            border-radius: 12px;
+        }
+        .sidebar-nav {
+            padding: 16px;
+        }
+        .nav-section {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            padding: 12px 16px 6px;
+        }
+        .nav-item {
+            margin: 4px 0;
+        }
+        .nav-btn {
+            width: 100%;
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-btn:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(124, 58, 237, 0.15));
+            color: var(--primary);
+        }
+        .sub-menu {
+            padding-left: 44px;
+            display: none;
+        }
+        .sub-menu.open { display: block; }
+        .sub-btn {
+            width: 100%;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            text-align: left;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .sub-btn:hover {
+            background: rgba(0, 212, 255, 0.08);
+            color: var(--text);
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+        }
+        .crypto-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .badge-algo {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-sym { background: rgba(0, 212, 255, 0.15); color: var(--primary); }
+        .badge-asym { background: rgba(124, 58, 237, 0.15); color: #a78bfa; }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-control, textarea, select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+        }
+        textarea { resize: vertical; min-height: 80px; }
+        .form-control:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #0099cc);
+            color: #0a0e1a;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3); }
+        .btn-secondary {
+            background: rgba(124, 58, 237, 0.8);
+            color: white;
+        }
+        .btn-secondary:hover { background: rgba(124, 58, 237, 1); }
+        .btn-reset {
+            background: rgba(100, 116, 139, 0.3);
+            color: var(--text-muted);
+        }
+        .btn-reset:hover { background: rgba(100, 116, 139, 0.5); color: var(--text); }
+        .btn-copy {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            transition: all 0.2s;
+        }
+        .btn-copy:hover {
+            background: rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .result-box {
+            background: var(--bg-input);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            min-height: 100px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .page { display: none; }
+        .page.active { display: block; }
+        .logout-btn {
+            margin: 16px;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            color: #f87171;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            font-weight: 500;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.25); }
+        .key-box {
+            background: rgba(124, 58, 237, 0.08);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.open { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            width: 100%;
+            max-width: 450px;
+        }
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .btn-change-pwd {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            margin-top: 8px;
+        }
+        hr {
+            border-color: rgba(0, 212, 255, 0.2);
+            margin: 24px 0;
+        }
+        h5 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2>CryptoKage</h2>
+        <p style="font-size: 11px; color: #475569;">Le ninja frappe sans être vu. Le code se transmet sans être compris.</p>
+    </div>
+    <div class="sidebar-user">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700;">{{ username[0].upper() }}</div>
+            <div>
+                <div style="font-weight: 600;">{{ username }}</div>
+                <div style="font-size: 11px; color: var(--primary);">{{ 'Administrateur' if role == 'admin' else 'Utilisateur' }}</div>
+            </div>
+        </div>
+        <button class="btn-change-pwd btn" style="width: 100%; margin-top: 12px; font-size: 12px;" onclick="openPasswordModal()">
+            <i class="bi bi-key"></i> Changer mon mot de passe
+        </button>
+    </div>
+
+    <div class="sidebar-nav">
+        <div class="nav-section">Cryptographie Symétrique</div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('cesar')"><i class="bi bi-arrow-repeat"></i> Code César</button></div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('vigenere')"><i class="bi bi-key"></i> Vigenère</button></div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('vernam')"><i class="bi bi-shield-lock"></i> Vernam (OTP)</button></div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('rc4')"><i class="bi bi-activity"></i> RC4</button></div>
+        <div class="nav-item"><button class="nav-btn" onclick="toggleMenu('des-menu')"><i class="bi bi-layers"></i> DES & Modes <i class="bi bi-chevron-down" id="des-arrow"></i></button></div>
+        <div class="sub-menu" id="des-menu">
+            <button class="sub-btn" onclick="showPage('des')">DES (ECB)</button>
+            <button class="sub-btn" onclick="showPage('cbc')">DES-CBC</button>
+            <button class="sub-btn" onclick="showPage('cfb')">DES-CFB</button>
+        </div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('aes')"><i class="bi bi-cpu"></i> AES-128</button></div>
+
+        <div class="nav-section mt-3">Cryptographie Asymétrique</div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('rsa')"><i class="bi bi-lock-fill"></i> RSA</button></div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('elgamal')"><i class="bi bi-diagram-3"></i> ElGamal</button></div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('ec_elgamal')"><i class="bi bi-bezier2"></i> EC-ElGamal</button></div>
+        
+        <div class="nav-section mt-3">Fonctions de Hachage</div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('sha1')"><i class="bi bi-hash"></i> SHA-1</button></div>
+        <div class="nav-item"><button class="nav-btn" onclick="showPage('sha256')"><i class="bi bi-shield-check"></i> SHA-256</button></div>
+    </div>
+
+    {% if role == 'admin' %}
+    <a href="/admin" class="logout-btn" style="background: rgba(0, 212, 255, 0.1); color: var(--primary); margin-top: auto;">
+        <i class="bi bi-people"></i> Administration
+    </a>
+    {% endif %}
+    <a href="/logout" class="logout-btn"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
+</div>
+
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h3><i class="bi bi-key me-2"></i>Changer mon mot de passe</h3>
+        <form method="POST" action="/changer-mot-de-passe">
+            <div class="form-group">
+                <label>Ancien mot de passe</label>
+                <input type="password" name="ancien_mot_de_passe" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Nouveau mot de passe</label>
+                <input type="password" name="nouveau_mot_de_passe" class="form-control" required minlength="6">
+                <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Minimum 6 caractères</div>
+            </div>
+            <div class="form-group">
+                <label>Confirmer le nouveau mot de passe</label>
+                <input type="password" name="confirmation_mot_de_passe" class="form-control" required>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" class="btn btn-reset" onclick="closePasswordModal()">Annuler</button>
+                <button type="submit" class="btn btn-primary">Changer le mot de passe</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <!-- Page César -->
+    <div class="page" id="page-cesar">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-arrow-repeat me-2"></i>Code César</div>
+                <span class="badge-algo badge-sym">Symétrique - Décalage alphabétique</span>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="cesar-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>DÉCALAGE (1-25)</label><input type="number" id="cesar-key" class="form-control" value="3" min="1" max="25"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="cesarChiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetCesarChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré</label><div id="result-cesar-chiffre" class="result-box">-</div></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ</label><textarea id="cesar-dec-msg" class="form-control" placeholder="Collez le texte chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>DÉCALAGE (1-25)</label><input type="number" id="cesar-dec-key" class="form-control" value="3" min="1" max="25"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="cesarDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetCesarDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-cesar-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Vigenère -->
+    <div class="page" id="page-vigenere">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-key me-2"></i>Vigenère</div>
+                <span class="badge-algo badge-sym">Symétrique - Substitution polyalphabétique</span>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="vigenere-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (lettres uniquement)</label><input type="text" id="vigenere-key" class="form-control" value="CLE"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="vigenereChiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetVigenereChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré</label><div id="result-vigenere-chiffre" class="result-box">-</div></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ</label><textarea id="vigenere-dec-msg" class="form-control" placeholder="Collez le texte chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (lettres uniquement)</label><input type="text" id="vigenere-dec-key" class="form-control" value="CLE"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="vigenereDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetVigenereDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-vigenere-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Vernam -->
+    <div class="page" id="page-vernam">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-shield-lock me-2"></i>Vernam (One-Time Pad)</div>
+                <span class="badge-algo badge-sym">Sécurité parfaite - XOR</span>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="vernam-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (optionnelle)</label><input type="text" id="vernam-key" class="form-control" placeholder="Laissez vide pour clé aléatoire"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="vernamChiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetVernamChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré (hex)</label><div id="result-vernam-chiffre" class="result-box" style="font-size: 11px;">-</div></div>
+                    <div class="mt-2"><label>CLÉ GÉNÉRÉE (hex) - À CONSERVER</label><div id="vernam-key-hex" class="result-box" style="font-size: 11px;">-</div></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ (hex)</label><textarea id="vernam-dec-msg" class="form-control" placeholder="Collez le texte chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (hex)</label><input type="text" id="vernam-dec-key" class="form-control" placeholder="Collez la clé..."></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="vernamDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetVernamDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-vernam-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page RC4 -->
+    <div class="page" id="page-rc4">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-activity me-2"></i>RC4</div>
+                <span class="badge-algo badge-sym">Chiffrement par flot</span>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="rc4-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ</label><input type="text" id="rc4-key" class="form-control" value="secret"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="rc4Chiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetRC4Chiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré (hex)</label><div id="result-rc4-chiffre" class="result-box" style="font-size: 11px;">-</div></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ (hex)</label><textarea id="rc4-dec-msg" class="form-control" placeholder="Collez le texte chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ</label><input type="text" id="rc4-dec-key" class="form-control" value="secret"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="rc4Dechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetRC4Dechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-rc4-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page DES (ECB) -->
+    <div class="page" id="page-des">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-layers me-2"></i>DES (ECB)</div>
+                <span class="badge-algo badge-sym">Réseau de Feistel - 16 rondes</span>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="des-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (8 caractères)</label><input type="text" id="des-key" class="form-control" value="DESkey1!"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="desChiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetDESChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré (hex)</label><div id="result-des-chiffre" class="result-box" style="font-size: 11px;">-</div></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ (hex)</label><textarea id="des-dec-msg" class="form-control" placeholder="Collez le texte chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (8 caractères)</label><input type="text" id="des-dec-key" class="form-control" value="DESkey1!"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="desDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetDESDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-des-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page CBC -->
+    <div class="page" id="page-cbc">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-link-45deg me-2"></i>DES-CBC</div>
+                <span class="badge-algo badge-sym">Cipher Block Chaining</span>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="cbc-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (8 caractères)</label><input type="text" id="cbc-key" class="form-control" value="DESkey1!"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="cbcChiffrer()"><i class="bi bi-lock"></i> Chiffrer (IV auto)</button>
+                        <button class="btn btn-reset" onclick="resetCBCChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré (hex)</label><div id="result-cbc" class="result-box" style="font-size: 11px;">-</div></div>
+                    <div class="mt-2"><label>IV GÉNÉRÉ (à conserver)</label><div id="cbc-iv" class="result-box" style="font-size: 11px;">-</div></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ (hex)</label><textarea id="cbc-dec-msg" class="form-control" placeholder="Collez le texte chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>IV (hex)</label><input type="text" id="cbc-dec-iv" class="form-control" placeholder="Collez l'IV..."></div>
+                    <div class="form-group"><label>CLÉ (8 caractères)</label><input type="text" id="cbc-dec-key" class="form-control" value="DESkey1!"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="cbcDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetCBCDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-cbc-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page CFB -->
+    <div class="page" id="page-cfb">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-water me-2"></i>DES-CFB</div>
+                <span class="badge-algo badge-sym">Cipher Feedback - Mode flot</span>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="cfb-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (8 caractères)</label><input type="text" id="cfb-key" class="form-control" value="DESkey1!"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="cfbChiffrer()"><i class="bi bi-lock"></i> Chiffrer (IV auto)</button>
+                        <button class="btn btn-reset" onclick="resetCFBChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré (hex)</label><div id="result-cfb" class="result-box" style="font-size: 11px;">-</div></div>
+                    <div class="mt-2"><label>IV GÉNÉRÉ (à conserver)</label><div id="cfb-iv" class="result-box" style="font-size: 11px;">-</div></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ (hex)</label><textarea id="cfb-dec-msg" class="form-control" placeholder="Collez le texte chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>IV (hex)</label><input type="text" id="cfb-dec-iv" class="form-control" placeholder="Collez l'IV..."></div>
+                    <div class="form-group"><label>CLÉ (8 caractères)</label><input type="text" id="cfb-dec-key" class="form-control" value="DESkey1!"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="cfbDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetCFBDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-cfb-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page AES -->
+    <div class="page" id="page-aes">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-cpu me-2"></i>AES-128</div>
+                <span class="badge-algo badge-sym">Standard NIST - 10 rondes</span>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="aes-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (16 caractères)</label><input type="text" id="aes-key" class="form-control" value="AESkey_16bytes!"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="aesChiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetAESChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré (hex)</label><div id="result-aes-chiffre" class="result-box" style="font-size: 11px;">-</div></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ (hex)</label><textarea id="aes-dec-msg" class="form-control" placeholder="Collez le texte chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>CLÉ (16 caractères)</label><input type="text" id="aes-dec-key" class="form-control" value="AESkey_16bytes!"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="aesDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetAESDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-aes-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page RSA -->
+    <div class="page" id="page-rsa">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-lock-fill me-2"></i>RSA</div>
+                <span class="badge-algo badge-asym">Asymétrique - Factorisation</span>
+            </div>
+            <div class="d-flex gap-2 mb-3">
+                <button class="btn btn-primary" onclick="genererClesRSA()"><i class="bi bi-key"></i> Générer les clés RSA</button>
+                <button class="btn btn-reset" onclick="resetRSA()"><i class="bi bi-arrow-counterclockwise"></i> Tout reset</button>
+            </div>
+            <div id="rsa-keys" class="key-box" style="display:none;">
+                <div><strong>Clé publique (e, n):</strong> e=<span id="rsa-e"></span>, n=<span id="rsa-n"></span></div>
+                <div class="mt-2"><strong>Clé privée (d, n):</strong> d=<span id="rsa-d"></span></div>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE CLAIR</label><textarea id="rsa-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>e (public)</label><input type="text" id="rsa-e-input" class="form-control" placeholder="Exposant public e"></div>
+                    <div class="form-group"><label>n (module)</label><input type="text" id="rsa-n-input" class="form-control" placeholder="Module n"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="rsaChiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetRSAChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré</label><div id="result-rsa" class="result-box" style="font-size: 11px;">-</div>
+                    <button class="btn-copy" style="margin-top: 8px;" onclick="copyToClipboardFromDiv('result-rsa')"><i class="bi bi-clipboard"></i> Copier</button></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE CHIFFRÉ</label><textarea id="rsa-cipher-input" class="form-control" placeholder="Collez le message chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>d (privé)</label><input type="text" id="rsa-d-input" class="form-control" placeholder="Exposant privé d"></div>
+                    <div class="form-group"><label>n (module)</label><input type="text" id="rsa-n-dec-input" class="form-control" placeholder="Module n"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="rsaDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetRSADechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-rsa-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page ElGamal -->
+    <div class="page" id="page-elgamal">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-diagram-3 me-2"></i>ElGamal</div>
+                <span class="badge-algo badge-asym">Asymétrique - Logarithme discret</span>
+            </div>
+            <div class="d-flex gap-2 mb-3">
+                <button class="btn btn-primary" onclick="genererClesElGamal()"><i class="bi bi-key"></i> Générer les clés ElGamal</button>
+                <button class="btn btn-reset" onclick="resetElGamal()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+            </div>
+            <div id="elgamal-keys" class="key-box" style="display:none;">
+                <div><strong>Clé publique:</strong> p=<span id="elg-p"></span>, g=<span id="elg-g"></span>, y=<span id="elg-y"></span></div>
+                <div class="mt-2"><strong>Clé privée:</strong> x=<span id="elg-x"></span></div>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="elg-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>p</label><input type="text" id="elg-p-input" class="form-control"></div>
+                    <div class="form-group"><label>g</label><input type="text" id="elg-g-input" class="form-control"></div>
+                    <div class="form-group"><label>y</label><input type="text" id="elg-y-input" class="form-control"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="elgamalChiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetElGamalChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré (a:b,...)</label><div id="result-elg" class="result-box" style="font-size: 11px;">-</div>
+                    <button class="btn-copy" style="margin-top: 8px;" onclick="copyToClipboardFromDiv('result-elg')"><i class="bi bi-clipboard"></i> Copier</button></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ</label><textarea id="elg-dec-msg" class="form-control" placeholder="Collez le message chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>x (privé)</label><input type="text" id="elg-x-input" class="form-control"></div>
+                    <div class="form-group"><label>p</label><input type="text" id="elg-p-dec-input" class="form-control"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="elgamalDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetElGamalDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-elg-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page EC-ElGamal -->
+    <div class="page" id="page-ec_elgamal">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-bezier2 me-2"></i>EC-ElGamal (secp256k1)</div>
+                <span class="badge-algo badge-asym">Courbe elliptique</span>
+            </div>
+            <div class="d-flex gap-2 mb-3">
+                <button class="btn btn-primary" onclick="genererClesECElGamal()"><i class="bi bi-key"></i> Générer les clés EC-ElGamal</button>
+                <button class="btn btn-reset" onclick="resetECElGamal()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+            </div>
+            <div id="ec-keys" class="key-box" style="display:none;">
+                <div><strong>Clé publique Q:</strong> (<span id="ec-qx"></span>, <span id="ec-qy"></span>)</div>
+                <div class="mt-2"><strong>Clé privée k:</strong> <span id="ec-k"></span></div>
+            </div>
+            <div class="grid-2">
+                <div style="background: rgba(0, 212, 255, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #00d4ff; margin-bottom: 16px; text-align: center;"><i class="bi bi-lock"></i> CHIFFREMENT</h5>
+                    <div class="form-group"><label>MESSAGE</label><textarea id="ec-msg" class="form-control" placeholder="Entrez le message à chiffrer..." rows="3"></textarea></div>
+                    <div class="form-group"><label>Qx</label><input type="text" id="ec-qx-input" class="form-control"></div>
+                    <div class="form-group"><label>Qy</label><input type="text" id="ec-qy-input" class="form-control"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="ecElgamalChiffrer()"><i class="bi bi-lock"></i> Chiffrer</button>
+                        <button class="btn btn-reset" onclick="resetECElGamalChiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Résultat chiffré (points)</label><div id="result-ec" class="result-box" style="font-size: 11px;">-</div>
+                    <button class="btn-copy" style="margin-top: 8px;" onclick="copyToClipboardFromDiv('result-ec')"><i class="bi bi-clipboard"></i> Copier</button></div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.03); border-radius: 12px; padding: 16px;">
+                    <h5 style="color: #f59e0b; margin-bottom: 16px; text-align: center;"><i class="bi bi-unlock"></i> DÉCHIFFREMENT</h5>
+                    <div class="form-group"><label>TEXTE CHIFFRÉ</label><textarea id="ec-dec-msg" class="form-control" placeholder="Collez le message chiffré..." rows="3"></textarea></div>
+                    <div class="form-group"><label>k (privé)</label><input type="text" id="ec-k-input" class="form-control"></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-secondary" onclick="ecElgamalDechiffrer()"><i class="bi bi-unlock"></i> Déchiffrer</button>
+                        <button class="btn btn-reset" onclick="resetECElGamalDechiffrement()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                    <div class="mt-3"><label>Message déchiffré</label><div id="result-ec-dec" class="result-box">-</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page SHA-1 -->
+    <div class="page" id="page-sha1">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-hash me-2"></i>SHA-1</div>
+                <span class="badge-algo badge-sym">Fonction de hachage - 160 bits</span>
+            </div>
+            <div class="grid-2">
+                <div>
+                    <div class="form-group"><label>Message</label><textarea id="sha1-msg" class="form-control" placeholder="Entrez le message à hacher..."></textarea></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="hashRequest('sha1')"><i class="bi bi-hash"></i> Calculer SHA-1</button>
+                        <button class="btn btn-reset" onclick="resetForm('sha1-msg', 'result-sha1')"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                </div>
+                <div><label>Hash SHA-1</label><div id="result-sha1" class="result-box">-</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page SHA-256 -->
+    <div class="page" id="page-sha256">
+        <div class="crypto-card">
+            <div class="card-header">
+                <div class="card-title"><i class="bi bi-shield-check me-2"></i>SHA-256</div>
+                <span class="badge-algo badge-sym">Fonction de hachage - 256 bits</span>
+            </div>
+            <div class="grid-2">
+                <div>
+                    <div class="form-group"><label>Message</label><textarea id="sha256-msg" class="form-control" placeholder="Entrez le message à hacher..."></textarea></div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" onclick="hashRequest('sha256')"><i class="bi bi-shield-check"></i> Calculer SHA-256</button>
+                        <button class="btn btn-reset" onclick="resetForm('sha256-msg', 'result-sha256')"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                </div>
+                <div><label>Hash SHA-256</label><div id="result-sha256" class="result-box">-</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let rsaKeys = {}, elgKeys = {}, ecKeys = {};
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(`page-${pageId}`).classList.add('active');
+}
+
+function toggleMenu(menuId) {
+    const menu = document.getElementById(menuId);
+    menu.classList.toggle('open');
+}
+
+function openPasswordModal() {
+    document.getElementById('passwordModal').classList.add('open');
+}
+
+function closePasswordModal() {
+    document.getElementById('passwordModal').classList.remove('open');
+}
+
+function copyToClipboardFromDiv(elementId) {
+    const content = document.getElementById(elementId).innerText;
+    if (content && content !== '-' && content !== 'Le résultat apparaîtra ici...') {
+        navigator.clipboard.writeText(content).then(function() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check"></i> Copié !';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 1500);
+        });
+    }
+}
+
+// ==================== FONCTIONS CÉSAR ====================
+async function cesarChiffrer() {
+    const message = document.getElementById('cesar-msg').value;
+    const cle = document.getElementById('cesar-key').value;
+    if (!message) { document.getElementById('result-cesar-chiffre').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'cesar', operation: 'chiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-cesar-chiffre').innerHTML = data.resultat || data.erreur;
+    } catch (error) { document.getElementById('result-cesar-chiffre').innerHTML = '❌ Erreur'; }
+}
+
+async function cesarDechiffrer() {
+    const message = document.getElementById('cesar-dec-msg').value;
+    const cle = document.getElementById('cesar-dec-key').value;
+    if (!message) { document.getElementById('result-cesar-dec').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'cesar', operation: 'dechiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-cesar-dec').innerHTML = data.resultat || data.erreur;
+    } catch (error) { document.getElementById('result-cesar-dec').innerHTML = '❌ Erreur'; }
+}
+
+function resetCesarChiffrement() {
+    document.getElementById('cesar-msg').value = '';
+    document.getElementById('result-cesar-chiffre').innerHTML = '-';
+}
+function resetCesarDechiffrement() {
+    document.getElementById('cesar-dec-msg').value = '';
+    document.getElementById('result-cesar-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS VIGENÈRE ====================
+async function vigenereChiffrer() {
+    const message = document.getElementById('vigenere-msg').value;
+    const cle = document.getElementById('vigenere-key').value;
+    if (!message) { document.getElementById('result-vigenere-chiffre').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'vigenere', operation: 'chiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-vigenere-chiffre').innerHTML = data.resultat || data.erreur;
+    } catch (error) { document.getElementById('result-vigenere-chiffre').innerHTML = '❌ Erreur'; }
+}
+
+async function vigenereDechiffrer() {
+    const message = document.getElementById('vigenere-dec-msg').value;
+    const cle = document.getElementById('vigenere-dec-key').value;
+    if (!message) { document.getElementById('result-vigenere-dec').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'vigenere', operation: 'dechiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-vigenere-dec').innerHTML = data.resultat || data.erreur;
+    } catch (error) { document.getElementById('result-vigenere-dec').innerHTML = '❌ Erreur'; }
+}
+
+function resetVigenereChiffrement() {
+    document.getElementById('vigenere-msg').value = '';
+    document.getElementById('result-vigenere-chiffre').innerHTML = '-';
+}
+function resetVigenereDechiffrement() {
+    document.getElementById('vigenere-dec-msg').value = '';
+    document.getElementById('result-vigenere-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS VERNAM ====================
+async function vernamChiffrer() {
+    const message = document.getElementById('vernam-msg').value;
+    const cle = document.getElementById('vernam-key').value;
+    if (!message) { document.getElementById('result-vernam-chiffre').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'vernam', operation: 'chiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-vernam-chiffre').innerHTML = data.resultat;
+        document.getElementById('vernam-key-hex').innerHTML = data.cle_hex;
+    } catch (error) { console.error(error); }
+}
+
+async function vernamDechiffrer() {
+    const chiffre = document.getElementById('vernam-dec-msg').value;
+    const cle = document.getElementById('vernam-dec-key').value;
+    if (!chiffre || !cle) { document.getElementById('result-vernam-dec').innerHTML = '❌ Entrez chiffré et clé'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'vernam', operation: 'dechiffrer', message: chiffre, params: { cle_hex: cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-vernam-dec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+function resetVernamChiffrement() {
+    document.getElementById('vernam-msg').value = '';
+    document.getElementById('result-vernam-chiffre').innerHTML = '-';
+    document.getElementById('vernam-key-hex').innerHTML = '-';
+}
+function resetVernamDechiffrement() {
+    document.getElementById('vernam-dec-msg').value = '';
+    document.getElementById('vernam-dec-key').value = '';
+    document.getElementById('result-vernam-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS RC4 ====================
+async function rc4Chiffrer() {
+    const message = document.getElementById('rc4-msg').value;
+    const cle = document.getElementById('rc4-key').value;
+    if (!message) { document.getElementById('result-rc4-chiffre').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'rc4', operation: 'chiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-rc4-chiffre').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+async function rc4Dechiffrer() {
+    const chiffre = document.getElementById('rc4-dec-msg').value;
+    const cle = document.getElementById('rc4-dec-key').value;
+    if (!chiffre) { document.getElementById('result-rc4-dec').innerHTML = '❌ Entrez chiffré'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'rc4', operation: 'dechiffrer', message: chiffre, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-rc4-dec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+function resetRC4Chiffrement() {
+    document.getElementById('rc4-msg').value = '';
+    document.getElementById('result-rc4-chiffre').innerHTML = '-';
+}
+function resetRC4Dechiffrement() {
+    document.getElementById('rc4-dec-msg').value = '';
+    document.getElementById('result-rc4-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS DES ====================
+async function desChiffrer() {
+    const message = document.getElementById('des-msg').value;
+    const cle = document.getElementById('des-key').value;
+    if (!message) { document.getElementById('result-des-chiffre').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'des', operation: 'chiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-des-chiffre').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+async function desDechiffrer() {
+    const chiffre = document.getElementById('des-dec-msg').value;
+    const cle = document.getElementById('des-dec-key').value;
+    if (!chiffre) { document.getElementById('result-des-dec').innerHTML = '❌ Entrez chiffré'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'des', operation: 'dechiffrer', message: chiffre, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-des-dec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+function resetDESChiffrement() {
+    document.getElementById('des-msg').value = '';
+    document.getElementById('result-des-chiffre').innerHTML = '-';
+}
+function resetDESDechiffrement() {
+    document.getElementById('des-dec-msg').value = '';
+    document.getElementById('result-des-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS CBC ====================
+async function cbcChiffrer() {
+    const message = document.getElementById('cbc-msg').value;
+    const cle = document.getElementById('cbc-key').value;
+    if (!message) { document.getElementById('result-cbc').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'cbc', operation: 'chiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-cbc').innerHTML = data.resultat;
+        document.getElementById('cbc-iv').innerHTML = data.iv;
+    } catch (error) { console.error(error); }
+}
+
+async function cbcDechiffrer() {
+    const chiffre = document.getElementById('cbc-dec-msg').value;
+    const cle = document.getElementById('cbc-dec-key').value;
+    const iv = document.getElementById('cbc-dec-iv').value;
+    if (!chiffre || !iv) { document.getElementById('result-cbc-dec').innerHTML = '❌ Entrez chiffré et IV'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'cbc', operation: 'dechiffrer', message: chiffre, params: { cle, iv } })
+        });
+        const data = await response.json();
+        document.getElementById('result-cbc-dec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+function resetCBCChiffrement() {
+    document.getElementById('cbc-msg').value = '';
+    document.getElementById('result-cbc').innerHTML = '-';
+    document.getElementById('cbc-iv').innerHTML = '-';
+}
+function resetCBCDechiffrement() {
+    document.getElementById('cbc-dec-msg').value = '';
+    document.getElementById('cbc-dec-iv').value = '';
+    document.getElementById('result-cbc-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS CFB ====================
+async function cfbChiffrer() {
+    const message = document.getElementById('cfb-msg').value;
+    const cle = document.getElementById('cfb-key').value;
+    if (!message) { document.getElementById('result-cfb').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'cfb', operation: 'chiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-cfb').innerHTML = data.resultat;
+        document.getElementById('cfb-iv').innerHTML = data.iv;
+    } catch (error) { console.error(error); }
+}
+
+async function cfbDechiffrer() {
+    const chiffre = document.getElementById('cfb-dec-msg').value;
+    const cle = document.getElementById('cfb-dec-key').value;
+    const iv = document.getElementById('cfb-dec-iv').value;
+    if (!chiffre || !iv) { document.getElementById('result-cfb-dec').innerHTML = '❌ Entrez chiffré et IV'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'cfb', operation: 'dechiffrer', message: chiffre, params: { cle, iv } })
+        });
+        const data = await response.json();
+        document.getElementById('result-cfb-dec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+function resetCFBChiffrement() {
+    document.getElementById('cfb-msg').value = '';
+    document.getElementById('result-cfb').innerHTML = '-';
+    document.getElementById('cfb-iv').innerHTML = '-';
+}
+function resetCFBDechiffrement() {
+    document.getElementById('cfb-dec-msg').value = '';
+    document.getElementById('cfb-dec-iv').value = '';
+    document.getElementById('result-cfb-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS AES ====================
+async function aesChiffrer() {
+    const message = document.getElementById('aes-msg').value;
+    const cle = document.getElementById('aes-key').value;
+    if (!message) { document.getElementById('result-aes-chiffre').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'aes', operation: 'chiffrer', message, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-aes-chiffre').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+async function aesDechiffrer() {
+    const chiffre = document.getElementById('aes-dec-msg').value;
+    const cle = document.getElementById('aes-dec-key').value;
+    if (!chiffre) { document.getElementById('result-aes-dec').innerHTML = '❌ Entrez chiffré'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'aes', operation: 'dechiffrer', message: chiffre, params: { cle } })
+        });
+        const data = await response.json();
+        document.getElementById('result-aes-dec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+function resetAESChiffrement() {
+    document.getElementById('aes-msg').value = '';
+    document.getElementById('result-aes-chiffre').innerHTML = '-';
+}
+function resetAESDechiffrement() {
+    document.getElementById('aes-dec-msg').value = '';
+    document.getElementById('result-aes-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS RSA ====================
+async function genererClesRSA() {
+    try {
+        const response = await fetch('/api/generer-cles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'rsa' })
+        });
+        const data = await response.json();
+        document.getElementById('rsa-e').innerText = data.e;
+        document.getElementById('rsa-n').innerText = data.n;
+        document.getElementById('rsa-d').innerText = data.d;
+        document.getElementById('rsa-e-input').value = data.e;
+        document.getElementById('rsa-n-input').value = data.n;
+        document.getElementById('rsa-d-input').value = data.d;
+        document.getElementById('rsa-n-dec-input').value = data.n;
+        document.getElementById('rsa-keys').style.display = 'block';
+    } catch (error) { console.error(error); }
+}
+
+async function rsaChiffrer() {
+    const message = document.getElementById('rsa-msg').value;
+    const e = document.getElementById('rsa-e-input').value;
+    const n = document.getElementById('rsa-n-input').value;
+    if (!message) { document.getElementById('result-rsa').innerHTML = '❌ Message vide'; return; }
+    if (!e || !n) { document.getElementById('result-rsa').innerHTML = '❌ Générez les clés d\'abord'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'rsa', operation: 'chiffrer', message, params: { e, n } })
+        });
+        const data = await response.json();
+        document.getElementById('result-rsa').innerHTML = data.resultat || data.erreur;
+    } catch (error) { document.getElementById('result-rsa').innerHTML = '❌ Erreur'; }
+}
+
+async function rsaDechiffrer() {
+    const chiffre = document.getElementById('rsa-cipher-input').value;
+    const d = document.getElementById('rsa-d-input').value;
+    const n = document.getElementById('rsa-n-dec-input').value;
+    if (!chiffre) { document.getElementById('result-rsa-dec').innerHTML = '❌ Entrez chiffré'; return; }
+    if (!d || !n) { document.getElementById('result-rsa-dec').innerHTML = '❌ Entrez clé privée'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'rsa', operation: 'dechiffrer', message: chiffre, params: { d, n } })
+        });
+        const data = await response.json();
+        document.getElementById('result-rsa-dec').innerHTML = data.resultat || data.erreur;
+    } catch (error) { document.getElementById('result-rsa-dec').innerHTML = '❌ Erreur'; }
+}
+
+function resetRSA() {
+    document.getElementById('rsa-msg').value = '';
+    document.getElementById('rsa-e-input').value = '';
+    document.getElementById('rsa-n-input').value = '';
+    document.getElementById('rsa-d-input').value = '';
+    document.getElementById('rsa-n-dec-input').value = '';
+    document.getElementById('rsa-cipher-input').value = '';
+    document.getElementById('result-rsa').innerHTML = '-';
+    document.getElementById('result-rsa-dec').innerHTML = '-';
+    document.getElementById('rsa-keys').style.display = 'none';
+}
+function resetRSAChiffrement() {
+    document.getElementById('rsa-msg').value = '';
+    document.getElementById('result-rsa').innerHTML = '-';
+}
+function resetRSADechiffrement() {
+    document.getElementById('rsa-cipher-input').value = '';
+    document.getElementById('result-rsa-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS ELGAMAL ====================
+async function genererClesElGamal() {
+    try {
+        const response = await fetch('/api/generer-cles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'elgamal' })
+        });
+        const data = await response.json();
+        document.getElementById('elg-p').innerText = data.p;
+        document.getElementById('elg-g').innerText = data.g;
+        document.getElementById('elg-y').innerText = data.y;
+        document.getElementById('elg-x').innerText = data.x;
+        document.getElementById('elg-p-input').value = data.p;
+        document.getElementById('elg-g-input').value = data.g;
+        document.getElementById('elg-y-input').value = data.y;
+        document.getElementById('elg-x-input').value = data.x;
+        document.getElementById('elg-p-dec-input').value = data.p;
+        document.getElementById('elgamal-keys').style.display = 'block';
+    } catch (error) { console.error(error); }
+}
+
+async function elgamalChiffrer() {
+    const message = document.getElementById('elg-msg').value;
+    const p = document.getElementById('elg-p-input').value;
+    const g = document.getElementById('elg-g-input').value;
+    const y = document.getElementById('elg-y-input').value;
+    if (!message) { document.getElementById('result-elg').innerHTML = '❌ Message vide'; return; }
+    if (!p || !g || !y) { document.getElementById('result-elg').innerHTML = '❌ Générez les clés d\'abord'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'elgamal', operation: 'chiffrer', message, params: { p, g, y } })
+        });
+        const data = await response.json();
+        document.getElementById('result-elg').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+async function elgamalDechiffrer() {
+    const chiffre = document.getElementById('elg-dec-msg').value;
+    const x = document.getElementById('elg-x-input').value;
+    const p = document.getElementById('elg-p-dec-input').value;
+    if (!chiffre) { document.getElementById('result-elg-dec').innerHTML = '❌ Entrez chiffré'; return; }
+    if (!x || !p) { document.getElementById('result-elg-dec').innerHTML = '❌ Entrez clé privée'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'elgamal', operation: 'dechiffrer', message: chiffre, params: { x, p } })
+        });
+        const data = await response.json();
+        document.getElementById('result-elg-dec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+function resetElGamal() {
+    document.getElementById('elg-msg').value = '';
+    document.getElementById('elg-p-input').value = '';
+    document.getElementById('elg-g-input').value = '';
+    document.getElementById('elg-y-input').value = '';
+    document.getElementById('elg-x-input').value = '';
+    document.getElementById('elg-p-dec-input').value = '';
+    document.getElementById('result-elg').innerHTML = '-';
+    document.getElementById('result-elg-dec').innerHTML = '-';
+    document.getElementById('elgamal-keys').style.display = 'none';
+}
+function resetElGamalChiffrement() {
+    document.getElementById('elg-msg').value = '';
+    document.getElementById('result-elg').innerHTML = '-';
+}
+function resetElGamalDechiffrement() {
+    document.getElementById('elg-dec-msg').value = '';
+    document.getElementById('result-elg-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS EC-ELGAMAL ====================
+async function genererClesECElGamal() {
+    try {
+        const response = await fetch('/api/generer-cles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'ec_elgamal' })
+        });
+        const data = await response.json();
+        document.getElementById('ec-qx').innerText = data.Qx;
+        document.getElementById('ec-qy').innerText = data.Qy;
+        document.getElementById('ec-k').innerText = data.k_prive;
+        document.getElementById('ec-qx-input').value = data.Qx;
+        document.getElementById('ec-qy-input').value = data.Qy;
+        document.getElementById('ec-k-input').value = data.k_prive;
+        document.getElementById('ec-keys').style.display = 'block';
+    } catch (error) { console.error(error); }
+}
+
+async function ecElgamalChiffrer() {
+    const message = document.getElementById('ec-msg').value;
+    const Qx = document.getElementById('ec-qx-input').value;
+    const Qy = document.getElementById('ec-qy-input').value;
+    if (!message) { document.getElementById('result-ec').innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'ec_elgamal', operation: 'chiffrer', message, params: { Qx, Qy } })
+        });
+        const data = await response.json();
+        document.getElementById('result-ec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+async function ecElgamalDechiffrer() {
+    const chiffre = document.getElementById('ec-dec-msg').value;
+    const k = document.getElementById('ec-k-input').value;
+    if (!chiffre) { document.getElementById('result-ec-dec').innerHTML = '❌ Entrez chiffré'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: 'ec_elgamal', operation: 'dechiffrer', message: chiffre, params: { k_prive: k } })
+        });
+        const data = await response.json();
+        document.getElementById('result-ec-dec').innerHTML = data.resultat;
+    } catch (error) { console.error(error); }
+}
+
+function resetECElGamal() {
+    document.getElementById('ec-msg').value = '';
+    document.getElementById('ec-qx-input').value = '';
+    document.getElementById('ec-qy-input').value = '';
+    document.getElementById('ec-k-input').value = '';
+    document.getElementById('result-ec').innerHTML = '-';
+    document.getElementById('result-ec-dec').innerHTML = '-';
+    document.getElementById('ec-keys').style.display = 'none';
+}
+function resetECElGamalChiffrement() {
+    document.getElementById('ec-msg').value = '';
+    document.getElementById('result-ec').innerHTML = '-';
+}
+function resetECElGamalDechiffrement() {
+    document.getElementById('ec-dec-msg').value = '';
+    document.getElementById('result-ec-dec').innerHTML = '-';
+}
+
+// ==================== FONCTIONS HACHAGE ====================
+async function hashRequest(algo) {
+    const msgId = algo === 'sha1' ? 'sha1-msg' : 'sha256-msg';
+    const resultId = `result-${algo}`;
+    const message = document.getElementById(msgId).value;
+    if (!message) { document.getElementById(resultId).innerHTML = '❌ Message vide'; return; }
+    try {
+        const response = await fetch('/api/crypto', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ algorithme: algo, operation: 'hash', message, params: {} })
+        });
+        const data = await response.json();
+        document.getElementById(resultId).innerHTML = data.resultat || data.erreur;
+    } catch (error) { document.getElementById(resultId).innerHTML = '❌ Erreur'; }
+}
+
+function resetForm(msgId, resultId) {
+    document.getElementById(msgId).value = '';
+    document.getElementById(resultId).innerHTML = '-';
+}
+
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+    });
+});
+
+showPage('cesar');
+</script>
+</body>
+</html>
